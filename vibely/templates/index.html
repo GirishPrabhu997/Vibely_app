@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vibely | Feed</title>
+    
+    <style>
+        :root {
+            /* Light Premium Theme vars */
+            --bg-main: #fafdff;
+            --bg-pattern: radial-gradient(#e1e8ed 1px, transparent 0);
+            --card-bg: rgba(255, 255, 255, 0.85);
+            --border-color: rgba(219, 219, 219, 0.7);
+            --text-dark: #262626;
+            --text-muted: #737373;
+            --link-blue: #0095f6;
+            --glass-blur: blur(12px);
+            --nav-bg: rgba(255, 255, 255, 0.85);
+        }
+
+        [data-theme="dark"] {
+            /* Dark Premium Theme vars */
+            --bg-main: #0a1118;
+            --bg-pattern: radial-gradient(#1e293b 1px, transparent 0);
+            --card-bg: rgba(15, 23, 42, 0.8);
+            --border-color: rgba(51, 65, 85, 0.5);
+            --text-dark: #f8fafc;
+            --text-muted: #94a3b8;
+            --link-blue: #38bdf8;
+            --glass-blur: blur(12px);
+            --nav-bg: rgba(15, 23, 42, 0.8);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: var(--text-dark);
+            background-color: var(--bg-main);
+            background-image: var(--bg-pattern), var(--bg-pattern);
+            background-size: 24px 24px;
+            background-position: 0 0, 12px 12px;
+            background-attachment: fixed;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        a {
+            color: var(--text-dark);
+            text-decoration: none;
+        }
+
+        /* Top Navigation Navbar */
+        .nav {
+            background-color: var(--nav-bg);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            border-bottom: 1px solid var(--border-color);
+            padding: 12px 20px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        .nav-brand {
+            font-size: 1.6rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-links a {
+            margin-left: 18px;
+            font-weight: 600;
+            color: var(--text-dark);
+            transition: color 0.2s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--link-blue);
+        }
+
+        #themeToggleBtn {
+            background: none;
+            border: none;
+            font-size: 1.25rem;
+            cursor: pointer;
+            margin-left: 18px;
+            padding: 4px;
+            transition: transform 0.2s ease;
+            outline: none;
+        }
+        
+        #themeToggleBtn:hover {
+            transform: scale(1.15);
+        }
+
+        /* Main Post Feed Container */
+        .feed {
+            max-width: 470px;
+            margin: 25px auto;
+            padding: 0 10px;
+        }
+
+        .post {
+            background-color: var(--card-bg);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            margin-bottom: 28px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.03);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        .post:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.07);
+        }
+
+        .post-header {
+            display: flex;
+            align-items: center;
+            padding: 14px;
+            gap: 10px;
+        }
+
+        .post-header a {
+            font-weight: 600;
+        }
+
+        .post-img-container {
+            width: 100%;
+            position: relative;
+            background-color: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 300px; /* Ensures space exists even if loading is delayed */
+        }
+
+        .post-img {
+            width: 100%;
+            max-height: 580px;
+            display: block;
+            object-fit: cover;
+            cursor: pointer;
+        }
+
+        /* Specialized rule to override standard images to make video behaves nicely */
+        video.post-img {
+            object-fit: contain;
+            background-color: #000;
+        }
+
+        .capsule-banner {
+            background-color: rgba(255, 243, 205, 0.85);
+            color: #856404;
+            padding: 10px 14px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            border-bottom: 1px solid rgba(255, 238, 186, 0.5);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .repost-banner {
+            background-color: rgba(243, 244, 246, 0.3);
+            color: var(--text-muted);
+            padding: 10px 14px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .post-body {
+            padding: 16px;
+        }
+
+        .post-actions {
+            margin-bottom: 12px;
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .action-btn {
+            font-size: 1.4rem;
+            cursor: pointer;
+            background: none;
+            border: none;
+            outline: none;
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .action-btn:hover {
+            transform: scale(1.18);
+        }
+
+        .likes-count {
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: block;
+            font-size: 0.95rem;
+        }
+
+        .caption-text strong {
+            font-weight: 600;
+            margin-right: 6px;
+        }
+
+        .comments-section {
+            margin-top: 10px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 10px;
+            max-height: 120px;
+            overflow-y: auto;
+        }
+
+        .comment-item {
+            margin-bottom: 6px;
+            font-size: 0.9rem;
+        }
+
+        .comment-item strong {
+            font-weight: 600;
+            margin-right: 5px;
+        }
+
+        .comment-form {
+            display: flex;
+            margin-top: 14px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 10px;
+        }
+
+        .comment-input {
+            flex-grow: 1;
+            border: none;
+            background: transparent;
+            color: var(--text-dark);
+            outline: none;
+            padding: 8px 0;
+            font-size: 0.9rem;
+            resize: none;
+        }
+
+        .comment-submit {
+            background: none;
+            border: none;
+            color: var(--link-blue);
+            font-weight: 600;
+            cursor: pointer;
+            padding: 0 8px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="nav">
+        <div class="nav-brand">Vibely</div>
+        <div class="nav-links">
+            <a href="{% url 'index' %}">🏠 Feed</a>
+            <a href="{% url 'explore' %}">🔍 Explore</a>
+            <a href="{% url 'create_post' %}">➕ Post</a>
+            <a href="{% url 'inbox' %}">💬 Messages</a>
+            <a href="{% url 'profile' request.user.username %}">👤 Profile</a>
+        
+            <form action="{% url 'logout' %}" method="POST" style="display: inline; margin-left: 18px;">
+                {% csrf_token %}
+                <button type="submit" style="background: none; border: none; color: #ed4956; font-weight: 600; font-family: inherit; font-size: 14px; cursor: pointer; padding: 0;">
+                    🚪 Logout
+                </button>
+            </form>
+
+            <button id="themeToggleBtn" title="Toggle Theme">🌓</button>
+        </div>
+    </div>
+
+    <div class="feed">
+        <div style="display: flex; gap: 18px; background: var(--card-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--border-color); border-radius: 16px; padding: 16px; margin-bottom: 24px; overflow-x: auto; scrollbar-width: none; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.02);">
+            
+            <div style="display: flex; flex-direction: column; align-items: center; cursor: pointer; flex-shrink: 0;" onclick="location.href='{% url 'create_post' %}'">
+                <div style="width: 64px; height: 64px; border-radius: 50%; background: var(--card-bg); border: 2px solid var(--border-color); display: flex; justify-content: center; align-items: center; margin-bottom: 6px; position: relative;">
+                    {% if request.user.profile.image %}
+                        <img src="{{ request.user.profile.image.url }}" style="width: 56px; height: 56px; border-radius: 50%; object-fit: cover;">
+                    {% else %}
+                        <div style="width: 56px; height: 56px; border-radius: 50%; background: rgba(100,116,139,0.1); display: flex; justify-content: center; align-items: center; font-weight: 700; color: var(--text-muted); font-size: 16px;">
+                            {{ request.user.username|slice:":1"|upper }}
+                        </div>
+                    {% endif %}
+                    <div style="position: absolute; bottom: 0; right: 0; background: #0095f6; color: white; width: 20px; height: 20px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 14px; font-weight: bold; border: 2px solid var(--bg-main);">+</div>
+                </div>
+                <span style="font-size: 11px; color: var(--text-dark); font-weight: 500; text-align: center; max-width: 68px; overflow: hidden; text-overflow: ellipsis;">My Story</span>
+            </div>
+
+            {% for following_user in request.user.following.all %}
+                {% if following_user.post_set.exists %}
+                    {% with latest_post=following_user.post_set.first %}
+                        {% if latest_post.image %}
+                        <div style="display: flex; flex-direction: column; align-items: center; cursor: pointer; flex-shrink: 0;" onclick="openStoryModal('{{ latest_post.image.url }}', '{{ following_user.username }}')">
+                            <div style="width: 64px; height: 64px; border-radius: 50%; background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); padding: 2px; display: flex; justify-content: center; align-items: center; margin-bottom: 6px;">
+                                <div style="width: 100%; height: 100%; border-radius: 50%; background: var(--bg-main); padding: 2px; display: flex; justify-content: center; align-items: center;">
+                                    {% if following_user.profile.image %}
+                                        <img src="{{ following_user.profile.image.url }}" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover;">
+                                    {% else %}
+                                        <div style="width: 50px; height: 50px; border-radius: 50%; background: rgba(100,116,139,0.1); display: flex; justify-content: center; align-items: center; font-weight: 700; color: var(--text-dark); font-size: 15px;">
+                                            {{ following_user.username|slice:":1"|upper }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <span style="font-size: 11px; color: var(--text-dark); font-weight: 400; text-align: center; max-width: 68px; overflow: hidden; text-overflow: ellipsis;">{{ following_user.username }}</span>
+                        </div>
+                        {% endif %}
+                    {% endwith %}
+                {% endif %}
+            {% endfor %}
+        </div>
+
+        {% for post in posts %}
+            <div class="post">
+                {% if post.parent_post %}
+                    <div class="repost-banner">
+                        🔄 <strong>@{{ post.user.username }}</strong> reposted this
+                    </div>
+                {% endif %}
+
+                <div class="post-header" style="justify-content: space-between; width: 100%; padding-right: 14px;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        {% if post.parent_post %}
+                            {% if post.parent_post.user.profile.image %}
+                                <img src="{{ post.parent_post.user.profile.image.url }}" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid var(--border-color);">
+                            {% else %}
+                                <div style="width: 32px; height: 32px; border-radius: 50%; background: rgba(100,116,139,0.1); display: flex; justify-content: center; align-items: center; font-weight: 700; font-size: 12px; border: 1px solid var(--border-color);">
+                                    {{ post.parent_post.user.username|slice:":1"|upper }}
+                                </div>
+                            {% endif %}
+                            <a href="{% url 'profile' post.parent_post.user.username %}">@{{ post.parent_post.user.username }}</a>
+                        {% else %}
+                            {% if post.user.profile.image %}
+                                <img src="{{ post.user.profile.image.url }}" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid var(--border-color);">
+                            {% else %}
+                                <div style="width: 32px; height: 32px; border-radius: 50%; background: rgba(100,116,139,0.1); display: flex; justify-content: center; align-items: center; font-weight: 700; font-size: 12px; border: 1px solid var(--border-color);">
+                                    {{ post.user.username|slice:":1"|upper }}
+                                </div>
+                            {% endif %}
+                            <a href="{% url 'profile' post.user.username %}">@{{ post.user.username }}</a>
+                        {% endif %}
+                    </div>
+                    
+                    {% if post.user == request.user %}
+                        <form action="{% url 'delete_post' post.id %}" method="POST" onsubmit="return confirm('Delete this post permanently?');" style="margin: 0; display: inline;">
+                            {% csrf_token %}
+                            <button type="submit" style="background: none; border: none; color: #ed4956; font-size: 0.85rem; font-weight: 600; cursor: pointer;">
+                                🗑️ Delete
+                            </button>
+                        </form>
+                    {% endif %}
+                </div>
+                
+                {% if post.is_time_capsule %}
+                    <div class="capsule-banner">
+                        🕒 Ghost Post: Vanishes in {{ post.expiration_time|timeuntil }}
+                    </div>
+                {% endif %}
+
+                <div class="post-img-container">
+                    {% if post.parent_post %}
+                        {% if post.parent_post.image %}
+                            {% if post.parent_post.image.url|lower|slice:"-4:" == ".mp4" or post.parent_post.image.url|lower|slice:"-4:" == ".mov" or post.parent_post.image.url|lower|slice:"-5:" == ".webm" or post.parent_post.image.url|lower|slice:"-4:" == ".ogg" %}
+                                <video class="post-img" controls loop muted playsinline preload="metadata">
+                                    <source src="{{ post.parent_post.image.url }}">
+                                    Your browser does not support the video tag.
+                                </video>
+                            {% else %}
+                                <img src="{{ post.parent_post.image.url }}" class="post-img" alt="Vibely Post Image">
+                            {% endif %}
+                        {% else %}
+                            <div style="padding: 40px; text-align: center; color: var(--text-muted); font-style: italic; width: 100%;">Text update only.</div>
+                        {% endif %}
+                    {% else %}
+                        {% if post.image %}
+                            {% if post.image.url|lower|slice:"-4:" == ".mp4" or post.image.url|lower|slice:"-4:" == ".mov" or post.image.url|lower|slice:"-5:" == ".webm" or post.image.url|lower|slice:"-4:" == ".ogg" %}
+                                <video class="post-img" controls loop muted playsinline preload="metadata">
+                                    <source src="{{ post.image.url }}">
+                                    Your browser does not support the video tag.
+                                </video>
+                            {% else %}
+                                <img src="{{ post.image.url }}" class="post-img" alt="Vibely Post Image">
+                            {% endif %}
+                        {% else %}
+                            <div style="padding: 40px; text-align: center; color: var(--text-muted); font-style: italic; width: 100%;">Text update only.</div>
+                        {% endif %}
+                    {% endif %}
+                </div>
+                
+                <div class="post-body">
+                    <div class="post-actions">
+                        {% if post.parent_post %}
+                            <a href="{% url 'like_post' post.parent_post.id %}" class="action-btn like-btn">❤️</a>
+                            <a href="{% url 'repost_post' post.parent_post.id %}" class="action-btn" title="Repost">🔄</a>
+                        {% else %}
+                            <a href="{% url 'like_post' post.id %}" class="action-btn like-btn">❤️</a>
+                            <a href="{% url 'repost_post' post.id %}" class="action-btn" title="Repost">🔄</a>
+                        {% endif %}
+                    </div>
+                    
+                    <span class="likes-count">
+                        {% if post.parent_post %}{{ post.parent_post.likes.count }}{% else %}{{ post.likes.count }}{% endif %} likes
+                    </span>
+                    
+                    <p class="caption-text">
+                        {% if post.parent_post %}
+                            <strong>{{ post.parent_post.user.username }}</strong>{{ post.parent_post.caption }}
+                        {% else %}
+                            <strong>{{ post.user.username }}</strong>{{ post.caption }}
+                        {% endif %}
+                    </p>
+                    
+                    <div class="comments-section">
+                        {% if post.parent_post %}
+                            {% for comment in post.parent_post.comments.all %}
+                                <div class="comment-item">
+                                    <strong>{{ comment.user.username }}</strong>{{ comment.text }}
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                        {% for comment in post.comments.all %}
+                                <div class="comment-item">
+                                    <strong>{{ comment.user.username }}</strong>{{ comment.text }}
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+
+                    <span style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; margin-top: 8px; display: block; letter-spacing: 0.2px;">
+                        {{ post.created_at|timesince }} AGO
+                    </span>
+
+                    <form action="{% if post.parent_post %}{% url 'add_comment' post.parent_post.id %}{% else %}{% url 'add_comment' post.id %}{% endif %}" method="POST" class="comment-form">
+                        {% csrf_token %}
+                        <input type="text" name="comment_text" class="comment-input" placeholder="Add a comment..." required>
+                        <button type="submit" class="comment-submit">Post</button>
+                    </form>
+                </div>
+            </div>
+        {% empty %}
+            <p style="text-align:center; color: var(--text-muted); margin-top: 100px; font-size: 1.1rem;">Your feed is completely empty. Search users on Explore to populate your feed!</p>
+        {% endfor %}
+    </div>
+
+    <div id="storyViewerModal" style="display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.94); justify-content: center; align-items: center; flex-direction: column;" onclick="closeStoryModal()">
+        <div style="position: absolute; top: 24px; left: 24px; color: white; font-weight: 600; font-size: 14px; z-index: 2010;">
+            <span id="storyModalUsername">@user</span>
+        </div>
+        <span style="position: absolute; top: 20px; right: 24px; color: rgba(255,255,255,0.75); font-size: 24px; font-weight: 300; cursor: pointer; z-index: 2010;" onclick="closeStoryModal()">✕</span>
+        <div style="width: 100%; max-width: 440px; height: 82vh; display: flex; justify-content: center; align-items: center; padding: 12px;" onclick="event.stopPropagation()">
+            <img id="storyModalImage" src="" style="max-width: 100%; max-height: 100%; border-radius: 10px; object-fit: contain;">
+        </div>
+    </div>
+
+    <script>
+        function openStoryModal(imageUrl, username) {
+            document.getElementById('storyModalImage').src = imageUrl;
+            document.getElementById('storyModalUsername').innerText = '@' + username;
+            document.getElementById('storyViewerModal').style.display = 'flex';
+        }
+        
+        function closeStoryModal() {
+            document.getElementById('storyViewerModal').style.display = 'none';
+        }
+        
+        const toggleBtn = document.getElementById('themeToggleBtn');
+        if(toggleBtn) {
+            toggleBtn.addEventListener('click', () => {
+                const currentTheme = document.documentElement.getAttribute('data-theme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                document.documentElement.setAttribute('data-theme', newTheme);
+            });
+        }
+    </script>
+</body>
+</html>

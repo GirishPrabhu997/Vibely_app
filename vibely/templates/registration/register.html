@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vibely | Join</title>
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+            --accent-gradient: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+            --card-bg: rgba(255, 255, 255, 0.85);
+            --border-color: rgba(219, 219, 219, 0.6);
+            --text-main: #1f1f1f;
+            --text-muted: #65676b;
+            --input-bg: #f7f8fa;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 30px 20px;
+        }
+
+        .register-wrapper {
+            width: 100%;
+            max-width: 380px;
+        }
+
+        .premium-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 40px 30px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+            margin-bottom: 16px;
+        }
+
+        .brand-header {
+            font-size: 2.8rem;
+            font-weight: 800;
+            letter-spacing: -1.5px;
+            margin-bottom: 8px;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .sub-tagline {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 30px;
+            line-height: 1.4;
+            padding: 0 10px;
+        }
+
+        /* Clean dynamic processing for standard form outputs */
+        .premium-card p {
+            margin-bottom: 18px;
+            text-align: left;
+        }
+
+        .premium-card label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .premium-card input {
+            width: 100%;
+            padding: 11px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background-color: var(--input-bg);
+            font-size: 0.9rem;
+            outline: none;
+            transition: all 0.25s ease;
+        }
+
+        .premium-card input:focus {
+            border-color: rgba(220, 39, 67, 0.5);
+            background-color: #ffffff;
+            box-shadow: 0 0 0 3px rgba(220, 39, 67, 0.1);
+        }
+
+        .helptext {
+            display: block;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 5px;
+            line-height: 1.4;
+        }
+
+        .errorlist {
+            list-style: none;
+            color: #dc2743;
+            font-size: 0.8rem;
+            margin-bottom: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .btn-submit {
+            width: 100%;
+            background: var(--accent-gradient);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 0;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            margin-top: 10px;
+            box-shadow: 0 4px 15px rgba(220, 39, 67, 0.15);
+            transition: opacity 0.2s ease, transform 0.1s ease;
+        }
+
+        .btn-submit:hover {
+            opacity: 0.95;
+        }
+
+        .btn-submit:active {
+            transform: scale(0.99);
+        }
+
+        .footer-toggle {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 22px;
+            text-align: center;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+            color: var(--text-muted);
+        }
+
+        .footer-toggle a {
+            color: #dc2743;
+            text-decoration: none;
+            font-weight: 600;
+            margin-left: 4px;
+        }
+        
+        .footer-toggle a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="register-wrapper">
+        <div class="premium-card">
+            <div class="brand-header">Vibely</div>
+            <div class="sub-tagline">Sign up to see photos and videos from your friends.</div>
+            
+            <form method="POST" action="{% url 'register' %}">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn-submit">Sign Up</button>
+            </form>
+        </div>
+
+        <div class="footer-toggle">
+            Have an account? <a href="{% url 'login' %}">Log in</a>
+        </div>
+    </div>
+
+</body>
+</html>

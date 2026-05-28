@@ -1,0 +1,20 @@
+<div style="max-width:500px; margin:30px auto; font-family:sans-serif;">
+    <h3>Conversation with @{{ recipient.username }}</h3>
+    <a href="{% url 'inbox' %}">⬅️ Back to Inbox</a>
+    
+    <div style="border:1px solid #ccc; height:350px; overflow-y:scroll; padding:15px; margin:15px 0; background:#fafafa;">
+        {% for msg in chat_thread %}
+            <div style="text-align: {% if msg.sender == request.user %}right{% else %}left{% endif %}; margin-bottom:10px;">
+                <span style="background: {% if msg.sender == request.user %}#dcf8c6{% else %}#fff{% endif %}; padding:8px 12px; border-radius:8px; display:inline-block; border:1px solid #ddd;">
+                    {{ msg.body }}
+                </span>
+            </div>
+        {% endfor %}
+    </div>
+
+    <form method="POST">
+        {% csrf_token %}
+        <input type="text" name="message_body" placeholder="Write something..." style="width:75%; padding:8px;" required>
+        <button type="submit" style="padding:8px; background:#0095f6; color:white; border:none;">Send</button>
+    </form>
+</div>

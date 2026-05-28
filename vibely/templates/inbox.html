@@ -1,0 +1,12 @@
+<div style="max-width:400px; margin:50px auto; font-family:sans-serif;">
+    <h2>Direct Messages</h2>
+    <a href="{% url 'index' %}">🏠 Back Home</a><hr>
+    <h3>Active Direct Threads</h3>
+    {% for partner in chat_partners %}
+        <div style="padding:15px; border:1px solid #ddd; margin-bottom:5px; background:white;">
+            <a href="{% url 'chat_room' partner.username %}" style="text-decoration:none; color:black; font-weight:bold;">👉 Chat with @{{ partner.username }}</a>
+        </div>
+    {% empty %}
+        <p style="color:gray;">No chat records found. Search for a user from the Explore tab to message them!</p>
+    {% endfor %}
+</div>

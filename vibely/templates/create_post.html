@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create New Post • Vibely</title>
+    <style>
+        :root {
+            --bg-color: #000000;
+            --card-bg: #121212;
+            --border-color: #262626;
+            --text-color: #ffffff;
+            --text-muted: #a8a8a8;
+            --btn-primary: #0095f6;
+            --btn-primary-hover: #1877f2;
+            --input-bg: #1c1c1e;
+            --error-color: #ed4956;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Top Navigation Header Bar */
+        .top-nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 20px;
+            border-bottom: 1px solid var(--border-color);
+            background-color: var(--bg-color);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            font-size: 24px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .nav-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        /* Main Form Container Workspace */
+        .main-wrapper {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .upload-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            width: 100%;
+            max-width: 480px;
+            padding: 24px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        /* Custom Media Dropzone Input Box */
+        .file-dropzone {
+            border: 2px dashed var(--border-color);
+            border-radius: 10px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            background-color: rgba(255, 255, 255, 0.02);
+            transition: border-color 0.2s, background-color 0.2s;
+            position: relative;
+        }
+
+        .file-dropzone:hover {
+            border-color: var(--btn-primary);
+            background-color: rgba(0, 149, 246, 0.04);
+        }
+
+        .file-dropzone input[type="file"] {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .dropzone-icon {
+            font-size: 2.5rem;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .dropzone-text {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .dropzone-subtext {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        /* Combined Media Preview Window */
+        .preview-container {
+            margin-top: 12px;
+            display: none;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            max-height: 260px;
+            background-color: #000000;
+        }
+
+        .preview-image, .preview-video {
+            width: 100%;
+            height: auto;
+            max-height: 260px;
+            object-fit: cover;
+            display: none;
+        }
+
+        /* Caption Textarea Styling */
+        .caption-textarea {
+            width: 100%;
+            height: 110px;
+            background-color: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-color);
+            padding: 12px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            resize: none;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .caption-textarea:focus {
+            border-color: #555555;
+        }
+
+        /* Dropdown Selection Selector Engine */
+        .select-wrapper {
+            position: relative;
+        }
+
+        .custom-select {
+            width: 100%;
+            background-color: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-color);
+            padding: 12px;
+            font-size: 0.95rem;
+            font-family: inherit;
+            outline: none;
+            cursor: pointer;
+            appearance: none;
+            -webkit-appearance: none;
+        }
+
+        .select-wrapper::after {
+            content: "▼";
+            font-size: 10px;
+            color: var(--text-muted);
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+        }
+
+        /* Action Buttons Footers */
+        .action-container {
+            margin-top: 28px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .submit-btn {
+            background-color: var(--btn-primary);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background-color 0.15s;
+        }
+
+        .submit-btn:hover {
+            background-color: var(--btn-primary-hover);
+        }
+
+        .cancel-link {
+            color: var(--text-muted);
+            text-align: center;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            padding: 6px;
+            transition: color 0.2s;
+        }
+
+        .cancel-link:hover {
+            color: var(--error-color);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="top-nav">
+        <a href="{% url 'index' %}" class="back-btn">←</a>
+        <div class="nav-title">Create new post</div>
+        <div style="width: 24px;"></div> 
+    </div>
+
+    <div class="main-wrapper">
+        <div class="upload-card">
+
+            
+           <form action="{% url 'create_post' %}" method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <div class="form-group">
+        <label class="form-label">📁 Select Media</label>
+        
+        <input type="file" name="image" id="imageFileInput" accept="image/*,video/*" style="display: none;" onchange="handlePreview(this)">
+
+        <div class="file-dropzone" id="dropzoneBox" onclick="document.getElementById('imageFileInput').click();" style="cursor: pointer;">
+            <span class="dropzone-icon">🎬</span>
+            <div class="dropzone-text" id="uploadPromptText">Choose an image or video file</div>
+            <div class="dropzone-subtext" id="uploadSubtext">Click here to upload</div>
+        </div>
+        
+        <div class="preview-container" id="previewContainerWindow">
+            <img src="" class="preview-image" id="liveImagePreviewElement" alt="Preview">
+            <video src="" class="preview-video" id="liveVideoPreviewElement" controls muted playsinline></video>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="form-label">✍️ Caption</label>
+        <textarea name="caption" class="caption-textarea" placeholder="Write your caption here..."></textarea>
+    </div>
+
+    <button type="submit" class="submit-btn" onclick="this.disabled=true; this.form.submit();">Share to Feed</button>
+</form>
+
+        </div>
+    </div>
+
+    <script>
+        const fileInput = document.getElementById('imageFileInput');
+        const previewContainer = document.getElementById('previewContainerWindow');
+        const previewImage = document.getElementById('liveImagePreviewElement');
+        const previewVideo = document.getElementById('liveVideoPreviewElement');
+        const dropzoneBox = document.getElementById('dropzoneBox');
+        const promptText = document.getElementById('uploadPromptText');
+        const subtext = document.getElementById('uploadSubtext');
+
+        fileInput.addEventListener('change', function() {
+            const chosenFile = this.files[0];
+            if (chosenFile) {
+                const fileType = chosenFile.type;
+                const readerObj = new FileReader();
+                
+                readerObj.addEventListener('load', function() {
+                    previewContainer.style.display = 'block';
+                    dropzoneBox.style.padding = '15px 10px';
+                    promptText.innerText = "🔄 Change Selected Media";
+                    subtext.innerText = `Selected: ${chosenFile.name}`;
+
+                    // Dynamic format router verification check
+                    if (fileType.startsWith('video/')) {
+                        previewImage.style.display = 'none';
+                        previewImage.setAttribute('src', '');
+                        
+                        previewVideo.setAttribute('src', this.result);
+                        previewVideo.style.display = 'block';
+                        previewVideo.load();
+                    } else {
+                        previewVideo.style.display = 'none';
+                        previewVideo.setAttribute('src', '');
+                        
+                        previewImage.setAttribute('src', this.result);
+                        previewImage.style.display = 'block';
+                    }
+                });
+                
+                readerObj.readAsDataURL(chosenFile);
+            }
+        });
+    </script>
+    <input type="file" name="image" id="imageFileInput" accept="image/*,video/*" style="display: none;">
+
+<script>
+    const dropzone = document.getElementById('dropzoneBox'); // Use whatever ID your container box has
+    const fileInput = document.getElementById('imageFileInput');
+
+    // If you have a click event to trigger file upload
+    dropzone.addEventListener('click', () => fileInput.click());
+
+    // CRITICAL: Update UI text when a file is chosen so user knows it's staged
+    fileInput.addEventListener('change', (e) => {
+        if (fileInput.files.length > 0) {
+            const fileName = fileInput.files[0].name;
+            document.getElementById('uploadPromptText').innerText = `Selected: ${fileName}`;
+        }
+    });
+</script>
+</body>
+</html>
