@@ -65,7 +65,7 @@ def create_post(request):
         capsule_mode = request.POST.get('capsule_mode')
         post = Post(user=request.user, image=image if image else None, caption=caption)
         
-        if capsule_mode and capsule_mode != 'none':
+        if capsule_mode and capsule_mode != 'permanent':
              post.is_time_capsule = True
              post.expiration_time = timezone.now() + timedelta(hours=int(capsule_mode))
         post.save()
@@ -135,19 +135,39 @@ def inbox(request):
     return render(request, 'inbox.html', {'chat_partners': chat_partners})
 
 @login_required
+# Updated imports: Ensure 'media' is handled
+# Add this to your imports if not present: from django.db import models
+
+@login_required
 def chat_room(request, username):
     recipient = get_object_or_404(User, username=username)
+    
+    # Handle incoming messages (Text + Media)
     if request.method == 'POST':
-        body = request.POST.get('message_body')
-        if body:
-            Message.objects.create(sender=request.user, receiver=recipient, body=body)
+        content = request.POST.get('content')
+        media = request.FILES.get('media') # Grabs the file
+        
+        # Only create if there is content or media
+        if content or media:
+            Message.objects.create(
+                sender=request.user, 
+                receiver=recipient, 
+                content=content, 
+                media=media
+            )
+            # Redirect to same page to prevent form resubmission
             return redirect('chat_room', username=username)
 
+    # Fetch and display chat history
     chat_thread = Message.objects.filter(
         (Q(sender=request.user) & Q(receiver=recipient)) | 
         (Q(sender=recipient) & Q(receiver=request.user))
-    )
-    return render(request, 'chat.html', {'chat_thread': chat_thread, 'recipient': recipient})
+    ).order_by('created_at') # Ensures chronological order
+    
+    return render(request, 'chat.html', {
+        'chat_thread': chat_thread, 
+        'recipient': recipient
+    })
 
 @login_required
 def delete_post(request, post_id):
@@ -174,11 +194,3 @@ def edit_profile(request):
             return redirect('profile', username=request.user.username)
             
     return render(request, 'edit_profile.html') # Create this template if you want a dedicated edit page
-
-def send_message(request, username):
-    # Logic to find the recipient
-    recipient = User.objects.get(username=username)
-    
-    # Example logic: redirect to a messaging inbox view
-    # You might pass the recipient's ID to your inbox page
-    return redirect('inbox') 

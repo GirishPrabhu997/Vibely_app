@@ -1,20 +1,43 @@
 <div style="max-width:500px; margin:30px auto; font-family:sans-serif;">
     <h3>Conversation with @{{ recipient.username }}</h3>
-    <a href="{% url 'inbox' %}">⬅️ Back to Inbox</a>
-    
-    <div style="border:1px solid #ccc; height:350px; overflow-y:scroll; padding:15px; margin:15px 0; background:#fafafa;">
-        {% for msg in chat_thread %}
-            <div style="text-align: {% if msg.sender == request.user %}right{% else %}left{% endif %}; margin-bottom:10px;">
-                <span style="background: {% if msg.sender == request.user %}#dcf8c6{% else %}#fff{% endif %}; padding:8px 12px; border-radius:8px; display:inline-block; border:1px solid #ddd;">
-                    {{ msg.body }}
-                </span>
-            </div>
-        {% endfor %}
-    </div>
+    <a href="{% url 'inbox' %}" style="color: #ff8c00; text-decoration: none; font-weight: bold;; font-size:16px;">⬅️ Back to Inbox</a>
 
-    <form method="POST">
+    <style>
+    .message-img { max-width: 150px; cursor: pointer; transition: 0.3s; border-radius: 5px; }
+    .message-img:hover { transform: scale(1.05); }
+    /* Style the file input */
+    input[type="file"]::file-selector-button {
+        background: #0095f6; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer;
+    }
+</style>
+    
+   {% for msg in chat_thread %}
+    <div style="margin-bottom:10px; text-align: {% if msg.sender == request.user %}right{% else %}left{% endif %};">
+        <div style="background: {% if msg.sender == request.user %}#dcf8c6{% else %}#fff{% endif %}; padding:8px; border-radius:8px; display:inline-block; border:1px solid #ddd;">
+            {% if msg.content %}<p style="margin:0;">{{ msg.content }}</p>{% endif %}
+            
+            {% if msg.media %}
+                <div style="margin-top:5px;">
+                    {% if msg.media.url|slice:"-4:" == ".mp4" or msg.media.url|slice:"-4:" == ".MOV" %}
+                        <video width="150" controls>
+                            <source src="{{ msg.media.url }}" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                    {% else %}
+                        <a href="{{ msg.media.url }}" target="_blank">
+                            <img src="{{ msg.media.url }}" style="max-width:150px; display:block; border-radius:5px;">
+                        </a>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endfor %}
+
+    <form method="post" enctype="multipart/form-data" style="display:flex; gap:5px;">
         {% csrf_token %}
-        <input type="text" name="message_body" placeholder="Write something..." style="width:75%; padding:8px;" required>
-        <button type="submit" style="padding:8px; background:#0095f6; color:white; border:none;">Send</button>
+        <input type="text" name="content" placeholder="Write something..." style="flex-grow:1; padding:8px;">
+        <input type="file" name="media" accept="image/*, video/*" style="width:100px;">
+        <button type="submit" style="padding:8px 15px; background:#0095f6; color:white; border:none; cursor:pointer;">Send</button>
     </form>
 </div>

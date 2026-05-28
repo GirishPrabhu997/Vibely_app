@@ -54,10 +54,14 @@ class Follow(models.Model):
         unique_together = ('follower', 'following')
 
 class Message(models.Model):
-    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sent_messages')
-    receiver = models.ForeignKey(User, on_delete=models.CASCADE, related_name='received_messages')
-    body = models.TextField(max_length=1000)
+    sender = models.ForeignKey(User, related_name='sent_messages', on_delete=models.CASCADE)
+    receiver = models.ForeignKey(User, related_name='received_messages', on_delete=models.CASCADE)
+    content = models.TextField(blank=True, null=True)
+    media = models.FileField(upload_to='message_media/', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"From {self.sender} to {self.receiver}"
 
     class Meta:
         ordering = ['created_at']

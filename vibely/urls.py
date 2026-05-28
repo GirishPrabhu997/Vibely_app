@@ -25,5 +25,4 @@ urlpatterns = [
     path('inbox/', views.inbox, name='inbox'),
     path('inbox/<str:username>/', views.chat_room, name='chat_room'),
     path('user/profile/edit/', views.edit_profile, name='edit_profile'),
-    path('message/<str:username>/', views.send_message, name='send_message'),
 ]
